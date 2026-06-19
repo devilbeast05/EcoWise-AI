@@ -1,0 +1,33 @@
+# Node modules
+node_modules/
+frontend/node_modules/
+
+# Python environment
+venv/
+backend/venv/
+.venv/
+backend/.venv/
+__pycache__/
+*.pyc
+
+# Local SQLite databases
+*.db
+backend/*.db
+ecowise.db
+backend/ecowise.db
+
+# Production build output
+dist/
+frontend/dist/
+
+# Secret/Environment variables
+.env
+backend/.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# OS Caches
+.DS_Store
+Thumbs.db
