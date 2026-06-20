@@ -27,10 +27,22 @@ origins = [
     "http://localhost:3000",
 ]
 
+allowed_origins_env = os.getenv("ALLOWED_ORIGINS")
+if allowed_origins_env:
+    if allowed_origins_env.strip() == "*":
+        origins = ["*"]
+    else:
+        origins = [o.strip() for o in allowed_origins_env.split(",") if o.strip()]
+
+# If origins is ["*"], we must set allow_credentials to False to prevent FastAPI startup error
+allow_credentials = True
+if "*" in origins:
+    allow_credentials = False
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_credentials=True,
+    allow_credentials=allow_credentials,
     allow_methods=["*"],
     allow_headers=["*"],
 )

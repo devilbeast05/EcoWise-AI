@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { api, type CoachRecommendations, type WeeklyReport, type ChatMessage } from "../services/api";
+import { api, API_BASE_URL, type CoachRecommendations, type WeeklyReport, type ChatMessage } from "../services/api";
 import { 
   Sparkles, FileText, Download, Send, 
   HelpCircle, MessageSquare, Loader2, Award, Zap, AlertCircle 
@@ -82,7 +82,7 @@ export const Coach: React.FC = () => {
   const handleDownloadPDF = async () => {
     try {
       const token = localStorage.getItem("ecowise_token");
-      const res = await fetch("http://localhost:8000/api/coach/weekly-report/pdf", {
+      const res = await fetch(`${API_BASE_URL}/coach/weekly-report/pdf`, {
         headers: {
           "Authorization": `Bearer ${token}`
         }
