@@ -221,40 +221,48 @@ export default function App() {
 
       {/* Main View Wrapper */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-8 flex-1">
-        {loading && !dashboardData && (
-          <div className="flex flex-col items-center justify-center py-24 text-slate-500">
-            <Loader2 className="animate-spin h-8 w-8 text-emerald-500 mb-2" />
-            <p className="text-sm">Fetching carbon calculations...</p>
-          </div>
+        {activeTab === "dashboard" && (
+          dashboardData ? (
+            <Dashboard data={dashboardData} goals={goals} />
+          ) : loading ? (
+            <div className="flex flex-col items-center justify-center py-24 text-slate-500">
+              <Loader2 className="animate-spin h-8 w-8 text-emerald-500 mb-2" />
+              <p className="text-sm">Fetching carbon calculations...</p>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-24 text-slate-500">
+              <Loader2 className="h-8 w-8 text-slate-350 mb-2" />
+              <p className="text-sm font-semibold">Dashboard Offline</p>
+              <p className="text-xs text-slate-400 mt-2">
+                Please make sure the backend server is running (e.g. by running <code className="bg-slate-150 dark:bg-slate-800 px-1 py-0.5 rounded">uvicorn app.main:app --reload</code> inside the <code className="bg-slate-150 dark:bg-slate-800 px-1 py-0.5 rounded">backend</code> directory).
+              </p>
+            </div>
+          )
         )}
 
-        {dashboardData && (
-          <>
-            {activeTab === "dashboard" && (
-              <Dashboard data={dashboardData} goals={goals} />
-            )}
-            {activeTab === "tracker" && (
-              <Tracker 
-                activities={activities} 
-                onActivityAdded={refreshData} 
-                onActivityDeleted={async (id) => {
-                  if (confirm("Are you sure you want to delete this activity log?")) {
-                    await api.activities.delete(id);
-                    refreshData();
-                  }
-                }} 
-              />
-            )}
-            {activeTab === "simulator" && (
-              <Simulator />
-            )}
-            {activeTab === "goals" && (
-              <Goals goals={goals} badges={badges} onGoalAdded={refreshData} />
-            )}
-            {activeTab === "coach" && (
-              <Coach />
-            )}
-          </>
+        {activeTab === "tracker" && (
+          <Tracker 
+            activities={activities} 
+            onActivityAdded={refreshData} 
+            onActivityDeleted={async (id) => {
+              if (confirm("Are you sure you want to delete this activity log?")) {
+                await api.activities.delete(id);
+                refreshData();
+              }
+            }} 
+          />
+        )}
+
+        {activeTab === "simulator" && (
+          <Simulator />
+        )}
+
+        {activeTab === "goals" && (
+          <Goals goals={goals} badges={badges} onGoalAdded={refreshData} />
+        )}
+
+        {activeTab === "coach" && (
+          <Coach />
         )}
       </main>
 
