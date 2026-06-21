@@ -1,18 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { api, type User, type DashboardData, type Activity, type Goal, type Badge, type ChatMessage } from "./services/api";
-import { Auth } from "./components/Auth";
 import { Dashboard } from "./components/Dashboard";
 import { Tracker } from "./components/Tracker";
 import { Simulator } from "./components/Simulator";
 import { Goals } from "./components/Goals";
 import { Coach } from "./components/Coach";
 import { 
-  Leaf, Sun, Moon, LogOut, LayoutDashboard, 
+  Leaf, Sun, Moon, LayoutDashboard, 
   PlusCircle, ShieldAlert, CheckCircle2, MessageSquare, X, Send, Loader2 
 } from "lucide-react";
 
 export default function App() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user] = useState<User>({
+    id: 1,
+    email: "guest@ecowise.ai",
+    full_name: "Guest User",
+    created_at: new Date().toISOString()
+  });
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [activeTab, setActiveTab] = useState<string>("dashboard");
 
@@ -29,15 +33,8 @@ export default function App() {
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [chatLoading, setChatLoading] = useState(false);
 
-  // 1. Initial Checks (Auth + Theme)
+  // 1. Initial Checks (Theme)
   useEffect(() => {
-    // Auth Check
-    const savedUser = localStorage.getItem("ecowise_user");
-    const token = localStorage.getItem("ecowise_token");
-    if (savedUser && token) {
-      setUser(JSON.parse(savedUser));
-    }
-
     // Theme Check
     const savedTheme = localStorage.getItem("ecowise_theme") as "light" | "dark";
     const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
@@ -95,14 +92,7 @@ export default function App() {
     }
   };
 
-  // 4. Logout handler
-  const handleLogout = () => {
-    api.auth.logout();
-    setUser(null);
-    setActiveTab("dashboard");
-    setChatHistory([]);
-    setIsChatOpen(false);
-  };
+
 
   // 5. Chat Widget message sending
   const handleSendWidgetMessage = async (e: React.FormEvent) => {
@@ -125,9 +115,7 @@ export default function App() {
     }
   };
 
-  if (!user) {
-    return <Auth onAuthSuccess={(u) => setUser(u)} />;
-  }
+
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors duration-300 pb-12">
@@ -161,13 +149,7 @@ export default function App() {
               </span>
             </div>
 
-            <button
-              onClick={handleLogout}
-              className="p-2 text-slate-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg transition-colors"
-              title="Sign Out"
-            >
-              <LogOut className="h-4.5 w-4.5" />
-            </button>
+
           </div>
         </div>
       </header>

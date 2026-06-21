@@ -38,22 +38,15 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     return encoded_jwt
 
 def get_current_user(token: Optional[str] = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    if not token:
-        raise credentials_exception
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str = payload.get("sub")
-        if email is None:
-            raise credentials_exception
-    except JWTError:
-        raise credentials_exception
-    
-    user = db.query(User).filter(User.email == email).first()
-    if user is None:
-        raise credentials_exception
-    return user
+    # Retrieve or create a default guest user
+    guest = db.query(User).filter(User.email == "guest@ecowise.ai").first()
+    if not guest:
+        guest = User(
+            email="guest@ecowise.ai",
+            hashed_password=get_password_hash("guest_default_password_123"),
+            full_name="Guest User"
+        )
+        db.add(guest)
+        db.commit()
+        db.refresh(guest)
+    return guest
